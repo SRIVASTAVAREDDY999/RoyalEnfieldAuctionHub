@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step to Checkout the code from your repository
+      # Checkout the code from the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
@@ -24,7 +24,13 @@ jobs:
         with:
           java-version: '11'
 
-      # Install SonarScanner (this is the step that was missing)
+      # Clean repository to ensure there are no issues with Git state
+      - name: Clean repository
+        run: |
+          git reset --hard
+          git clean -fdx
+
+      # Install SonarScanner
       - name: Install SonarScanner
         run: |
           sudo apt-get update
@@ -34,12 +40,13 @@ jobs:
           sudo mv sonar-scanner-4.7.0.2747-linux /opt/sonar-scanner
           sudo ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
 
-      # Step to Run SonarCloud Analysis
+      # Run SonarCloud analysis
       - name: Run SonarCloud analysis
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Make sure you have added your SONAR_TOKEN in GitHub Secrets
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           sonar-scanner \
             -Dsonar.projectKey=RoyalEnfieldAuctionHub \
             -Dsonar.organization=SRIVASTAVAREDDYMADAPA \
             -Dsonar.host.url=https://sonarcloud.io
+
