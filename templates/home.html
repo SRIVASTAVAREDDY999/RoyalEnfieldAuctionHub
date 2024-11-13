@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Enfield Auction Hub</title>
+</head>
+<body>
+    <h1>Welcome to the Royal Enfield Auction Hub, {{ username }}!</h1>
+
+    <div>
+        <a href="{{ url_for('sell') }}">Sell Your Royal Enfield</a>
+    </div>
+    <div>
+        <a href="{{ url_for('buy') }}">Browse Bikes for Sale</a>
+    </div>
+
+    <br>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>
