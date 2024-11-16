@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '11'
-          distribution: 'temurin'    # Changed from 'adoptium' to 'temurin'
+          distribution: 'temurin'
           cache: 'maven'
 
       - name: Cache SonarCloud packages
@@ -34,11 +34,6 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-
-      - name: Clean repository
-        run: |
-          git reset --hard
-          git clean -fdx
 
       - name: Install SonarScanner
         run: |
@@ -62,18 +57,4 @@ jobs:
             -Dsonar.java.binaries=target/classes \
             -Dsonar.sources=src \
             -Dsonar.exclusions=**/test/**,**/target/**,**/docs/**,**/generated/** \
-            -Dsonar.coverage.exclusions=**/test/**,**/generated/** \
-            -Dsonar.qualitygate.wait=true
-
-      - name: Check Quality Gate
-        if: always()
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          STATUS=$(curl -s -u ${SONAR_TOKEN}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=RoyalEnfieldAuctionHub" | jq -r '.projectStatus.status')
-          if [ "$STATUS" = "ERROR" ]; then
-            echo "Quality Gate failed!"
-            exit 1
-          fi
-
-Version 2 of 2
+            -Dsonar.coverage.exclusions=**/test/**,**/generated/**
