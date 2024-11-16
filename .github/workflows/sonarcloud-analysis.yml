@@ -7,31 +7,34 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
-  build:
+  sonarcloud:
     name: Build and Analyze on SonarCloud
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      # Checkout the code from the repository
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      # Set up JDK 11 (Adoptium)
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          java-version: '11'  # Set Java version to 11
-          distribution: 'adoptium'  # Updated to 'adoptium' (corrected)
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'maven'
 
-      # Clean repository to ensure there are no issues with Git state
-      - name: Clean repository
-        run: |
-          git reset --hard
-          git clean -fdx
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
-      # Install SonarScanner
       - name: Install SonarScanner
         run: |
           sudo apt-get update
@@ -41,13 +44,17 @@ jobs:
           sudo mv sonar-scanner-4.7.0.2747-linux /opt/sonar-scanner
           sudo ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
 
-      # Run SonarCloud analysis
       - name: Run SonarCloud analysis
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           sonar-scanner \
             -Dsonar.projectKey=RoyalEnfieldAuctionHub \
             -Dsonar.organization=SRIVASTAVAREDDYMADAPA \
-            -Dsonar.host.url=https://sonarcloud.io
-
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.sourceEncoding=UTF-8 \
+            -Dsonar.java.binaries=target/classes \
+            -Dsonar.sources=src \
+            -Dsonar.exclusions=**/test/**,**/target/**,**/docs/**,**/generated/** \
+            -Dsonar.coverage.exclusions=**/test/**,**/generated/**
