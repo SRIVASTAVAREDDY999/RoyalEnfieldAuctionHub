@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Bike Listing</title>
+</head>
+<body>
+    <h1>Edit Bike Listing</h1>
+
+    <form method="POST">
+        <div>
+            <label for="name">Bike Name:</label>
+            <input type="text" id="name" name="name" value="{{ product.name }}" required>
+        </div>
+        <div>
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" value="{{ product.price }}" required>
+        </div>
+        <div>
+            <label for="year_of_purchase">Year of Purchase:</label>
+            <input type="number" id="year_of_purchase" name="year_of_purchase" value="{{ product.year_of_purchase }}" required>
+        </div>
+        <div>
+            <label for="condition">Condition:</label>
+            <select id="condition" name="condition" required>
+                <option value="New" {% if product.condition == 'New' %}selected{% endif %}>New</option>
+                <option value="Used" {% if product.condition == 'Used' %}selected{% endif %}>Used</option>
+            </select>
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" required>{{ product.description }}</textarea>
+        </div>
+        <div>
+            <button type="submit">Update Bike</button>
+        </div>
+    </form>
+
+    <br>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

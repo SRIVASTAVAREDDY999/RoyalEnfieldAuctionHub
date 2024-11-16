@@ -15,6 +15,25 @@
         <a href="{{ url_for('buy') }}">Browse Bikes for Sale</a>
     </div>
 
+    <h2>Your Listings</h2>
+    <ul>
+        {% for product in current_user.products %}
+            <li>
+                <strong>{{ product.name }}</strong><br>
+                Price: ₹{{ product.price }}<br>
+                Year of Purchase: {{ product.year_of_purchase }}<br>
+                Condition: {{ product.condition }}<br>
+                Description: {{ product.description }}<br>
+                <a href="{{ url_for('edit', product_id=product.id) }}">Update</a>
+                <form method="POST" action="{{ url_for('delete', product_id=product.id) }}" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% else %}
+            <li>You have no bikes listed for sale.</li>
+        {% endfor %}
+    </ul>
+
     <br>
     <a href="{{ url_for('logout') }}">Logout</a>
 </body>
