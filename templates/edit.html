@@ -3,41 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Bike Listing</title>
+    <title>Edit Bike Listing - Royal Enfield Auction Hub</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Edit Bike Listing</h1>
+    <div class="container mt-5">
+        <h2>Edit Your Bike Listing</h2>
 
-    <form method="POST">
-        <div>
-            <label for="name">Bike Name:</label>
-            <input type="text" id="name" name="name" value="{{ product.name }}" required>
-        </div>
-        <div>
-            <label for="price">Price:</label>
-            <input type="number" id="price" name="price" value="{{ product.price }}" required>
-        </div>
-        <div>
-            <label for="year_of_purchase">Year of Purchase:</label>
-            <input type="number" id="year_of_purchase" name="year_of_purchase" value="{{ product.year_of_purchase }}" required>
-        </div>
-        <div>
-            <label for="condition">Condition:</label>
-            <select id="condition" name="condition" required>
-                <option value="New" {% if product.condition == 'New' %}selected{% endif %}>New</option>
-                <option value="Used" {% if product.condition == 'Used' %}selected{% endif %}>Used</option>
-            </select>
-        </div>
-        <div>
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" rows="4" required>{{ product.description }}</textarea>
-        </div>
-        <div>
-            <button type="submit">Update Bike</button>
-        </div>
-    </form>
+        <form method="POST" class="mt-4">
+            <div class="form-group">
+                <label for="name">Bike Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ product.name }}" required>
+            </div>
 
-    <br>
-    <a href="{{ url_for('home') }}">Back to Home</a>
+            <div class="form-group">
+                <label for="price">Price (₹)</label>
+                <input type="number" class="form-control" id="price" name="price" value="{{ product.price }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="year_of_purchase">Year of Purchase</label>
+                <input type="number" class="form-control" id="year_of_purchase" name="year_of_purchase" value="{{ product.year_of_purchase }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="condition">Condition</label>
+                <select class="form-control" id="condition" name="condition" required>
+                    <option value="Excellent" {% if product.condition == 'Excellent' %}selected{% endif %}>Excellent</option>
+                    <option value="Good" {% if product.condition == 'Good' %}selected{% endif %}>Good</option>
+                    <option value="Fair" {% if product.condition == 'Fair' %}selected{% endif %}>Fair</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="4" required>{{ product.description }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Listing</button>
+        </form>
+
+        <br>
+        <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>
+    </div>
 </body>
 </html>
