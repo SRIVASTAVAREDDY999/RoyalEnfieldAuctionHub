@@ -1,4 +1,4 @@
-name: Python application
+name: Python CI/CD Pipeline
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -23,10 +23,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests (optional)
+      - name: Run Tests
         run: |
-          pytest  # Assuming you're using pytest for tests
+          pytest --cov=your_module --cov-report=xml  # Adjust for your testing framework
 
-      - name: Deploy to server or other post-deployment tasks
+      - name: SonarCloud Analysis
+        uses: sonarsource/sonarcloud-github-action@v1.0.0
+        with:
+          sonar-token: ${{3fb121d7086d898ab8011cddf655774f46b8e7f1}}  # Your SonarCloud token in GitHub secrets
+
+      - name: Deploy to AWS Amplify
         run: |
-          # Add your deployment or other post-deployment tasks here
+          # Amplify Deployment (Assuming Amplify CLI is set up)
+          amplify push
