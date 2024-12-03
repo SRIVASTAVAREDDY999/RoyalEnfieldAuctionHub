@@ -3,19 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Royal Enfield Auction Hub</title>
+    <title>Home - Royal Enfield Auction Hub</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Welcome to the Royal Enfield Auction Hub, {{ username }}!</h1>
+    <div class="container mt-5">
+        <h2>Welcome to the Royal Enfield Auction Hub, {{ username }}!</h2>
 
-    <div>
-        <a href="{{ url_for('sell') }}">Sell Your Royal Enfield</a>
-    </div>
-    <div>
-        <a href="{{ url_for('buy') }}">Browse Bikes for Sale</a>
-    </div>
+        <div class="mt-4">
+            <a href="{{ url_for('sell') }}" class="btn btn-success">Sell Your Royal Enfield</a>
+            <a href="{{ url_for('buy') }}" class="btn btn-info">Browse Bikes for Sale</a>
+        </div>
 
-    <br>
-    <a href="{{ url_for('logout') }}">Logout</a>
+        <h3 class="mt-5">Your Listings</h3>
+        <ul class="list-group">
+            {% for product in current_user.products %}
+                <li class="list-group-item">
+                    <strong>{{ product.name }}</strong><br>
+                    Price: ₹{{ product.price }}<br>
+                    Year of Purchase: {{ product.year_of_purchase }}<br>
+                    Condition: {{ product.condition }}<br>
+                    Description: {{ product.description }}<br>
+                    <a href="{{ url_for('edit', product_id=product.id) }}" class="btn btn-primary btn-sm">Update</a>
+                    <form method="POST" action="{{ url_for('delete', product_id=product.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-primary btn-sm">Delete</button>
+                    </form>
+                </li>
+            {% else %}
+                <li class="list-group-item">You have no bikes listed for sale.</li>
+            {% endfor %}
+        </ul>
+
+        <p class="mt-3"><a href="{{ url_for('logout') }}" class="btn btn-primary">Logout</a></p>
+    </div>
 </body>
 </html>

@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bikes for Sale</title>
+    <title>Browse Bikes - Royal Enfield Auction Hub</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Browse Bikes for Sale</h1>
+    <div class="container mt-5">
+        <h2>Browse Bikes for Sale</h2>
 
-    <ul>
-        {% for product in products %}
-            <li>
-                <strong>{{ product.name }}</strong><br>
-                Price: ₹{{ product.price }}<br>
-                Year of Purchase: {{ product.year_of_purchase }}<br>
-                Condition: {{ product.condition }}<br>
-                Description: {{ product.description }}<br>
-            </li>
-        {% else %}
-            <li>No bikes available for sale at the moment.</li>
-        {% endfor %}
-    </ul>
+        <ul class="list-group mt-4">
+            {% for product in products %}
+                <li class="list-group-item">
+                    <strong>{{ product.name }}</strong><br>
+                    Price: ₹{{ product.price }}<br>
+                    Year of Purchase: {{ product.year_of_purchase }}<br>
+                    Condition: {{ product.condition }}<br>
+                    Description: {{ product.description }}<br>
+                </li>
+            {% else %}
+                <li class="list-group-item">No bikes available for sale.</li>
+            {% endfor %}
+        </ul>
 
-    <br>
-    <a href="{{ url_for('home') }}">Back to Home</a>
+        <br>
+        <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
+    </div>
 </body>
 </html>
-
