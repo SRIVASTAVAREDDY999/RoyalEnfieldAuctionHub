@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 import logging
-from config import Config 
+from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -38,7 +38,8 @@ def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')  # Hash password
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
         new_user = User(username=username, password=hashed_password)
 
         try:
@@ -47,6 +48,7 @@ def signup():
             flash("Account created successfully!", "success")
             return redirect(url_for('signin'))
         except Exception as e:
+            db.session.rollback()
             logging.error(f"Error creating user: {e}")
             flash("Username already exists.", "danger")
             return redirect(url_for('signup'))
@@ -105,6 +107,7 @@ def sell():
             flash("Your bike has been listed for sale!", "success")
             return redirect(url_for('home'))
         except Exception as e:
+            db.session.rollback()
             logging.error(f"Error while listing bike: {e}")
             flash("An error occurred while listing your bike. Please try again.", "danger")
             return redirect(url_for('sell'))
@@ -116,6 +119,64 @@ def sell():
 def buy():
     products = Product.query.all()
     return render_template('buy.html', products=products)
+
+@app.route('/edit/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def edit(product_id):
+    product = Product.query.get_or_404(product_id)
+
+    if product.user_id != current_user.id:
+        flash("You do not have permission to edit this product.", "danger")
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        product.name = request.form['name']
+        product.price = request.form['price']
+        product.year_of_purchase = request.form['year_of_purchase']
+        product.condition = request.form['condition']
+        product.description = request.form['description']
+
+        try:
+            db.session.commit()
+            flash("Your bike has been updated!", "success")
+            return redirect(url_for('home'))
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error while updating bike: {e}")
+            flash("An error occurred while updating your bike. Please try again.", "danger")
+            return redirect(url_for('edit', product_id=product.id))
+
+    return render_template('edit.html', product=product)
+
+@app.route('/delete/<int:product_id>', methods=['POST'])
+@login_required
+def delete(product_id):
+    product = Product.query.get_or_404(product_id)
+
+    if product.user_id != current_user.id:
+        flash("You do not have permission to delete this product.", "danger")
+        return redirect(url_for('home'))
+
+    try:
+        db.session.delete(product)
+        db.session.commit()
+        flash("Your bike has been deleted from the listings.", "success")
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error while deleting bike: {e}")
+        flash("An error occurred while deleting your bike. Please try again.", "danger")
+
+    return redirect(url_for('home'))
+
+@app.errorhandler(500)
+def internal_error(error):
+    app.logger.error(f"Server Error: {error}")
+    return "500 error", 500
+
+@app.errorhandler(404)
+def not_found_error(error):
+    app.logger.error(f"Not Found: {error}")
+    return "404 error", 404
 
 with app.app_context():
     db.create_all()
