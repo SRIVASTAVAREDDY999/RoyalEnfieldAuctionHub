@@ -30,7 +30,7 @@ jobs:
           PYTHONPATH: ./  # Adjust if your app is in a subdirectory
 
       - name: Upload Coverage to SonarCloud
-        uses: sonarsource/sonarcloud-github-action@v1.0.0
+        uses: sonarsource/sonarcloud-github-action@v2
         with:
           args: >
             -Dsonar.projectKey=your_project_key
