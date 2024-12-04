@@ -30,9 +30,4 @@ jobs:
       - name: SonarCloud Analysis
         uses: sonarsource/sonarcloud-github-action@v1.0.0
         with:
-          sonar-token: ${{3fb121d7086d898ab8011cddf655774f46b8e7f1}}  # Your SonarCloud token in GitHub secrets
-
-      - name: Deploy to AWS Amplify
-        run: |
-          # Amplify Deployment (Assuming Amplify CLI is set up)
-          amplify push
+          sonar-token: ${{3fb121d7086d898ab8011cddf655774f46b8e7f1}}  
