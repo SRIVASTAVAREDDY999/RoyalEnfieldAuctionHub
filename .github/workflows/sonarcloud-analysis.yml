@@ -26,11 +26,12 @@ jobs:
         pip install -r requirements.txt
         pip install pytest pytest-cov
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$(pwd)/src" >> $GITHUB_ENV  # This adds src to PYTHONPATH
+    - name: Set PYTHONPATH to include src directory
+      run: echo "PYTHONPATH=$(pwd)/src" >> $GITHUB_ENV  # Add src folder to PYTHONPATH
 
     - name: Run tests with coverage
-      run: pytest --cov=src --cov-report=xml  # Replace 'your_module' with 'src' in pytest
+      run: |
+        pytest --cov=src --cov-report=xml  # Ensure pytest tests src and generates coverage
 
     - name: SonarCloud Scan
       run: sonar-scanner
