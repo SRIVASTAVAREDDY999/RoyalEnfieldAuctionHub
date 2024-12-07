@@ -1,20 +1,40 @@
-name: Build
+name: SonarQube Analysis
+
 on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+
 jobs:
-  sonarqube:
-    name: SonarQube
+  sonarcloud:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Cache sonar scanner
+      uses: actions/cache@v4
+      with:
+        path: ~/.sonar
+        key: sonar-scanner-${{ runner.os }}-${{ hashFiles('**/sonar-project.properties') }}
+        restore-keys: |
+          sonar-scanner-${{ runner.os }}
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: SonarCloud Scan
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      uses: SonarSource/sonarqube-scan-action@v4
+
+    - name: Upload Coverage Report
+      run: |
+        pytest --cov=src --cov-report=xml
