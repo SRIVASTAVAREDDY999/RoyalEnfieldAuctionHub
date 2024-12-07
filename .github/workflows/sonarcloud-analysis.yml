@@ -1,40 +1,39 @@
-name: SonarCloud Analysis
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  sonarcloud:
-    runs-on: ubuntu-latest
+  install_dependencies:
+    runs-on: amazon-linux-2  # Using Amazon Linux 2
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 1: Checkout the code from GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
+      # Step 2: Set up Python environment (version 3.8 in this case)
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install pytest pytest-cov
+      # Step 3: Install dependencies from requirements.txt
+      - name: Install dependencies
+        run: |
+          # Upgrade pip to the latest version
+          python -m pip install --upgrade pip
+          
+          # Install dependencies from requirements.txt
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "requirements.txt not found!"
+            exit 1
+          fi
 
-    - name: Set PYTHONPATH to include src directory
-      run: echo "PYTHONPATH=$(pwd)/src" >> $GITHUB_ENV  # Adds src to PYTHONPATH
-
-    - name: Run tests with coverage
-      run: |
-        pytest --cov=src --cov-report=xml  # Specify 'src' to collect coverage data
-
-    - name: SonarCloud Scan
-      run: sonar-scanner
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: https://sonarcloud.io
+      # Step 4: Run Django tests
+      - name: Run tests
+        run: python manage.py test
