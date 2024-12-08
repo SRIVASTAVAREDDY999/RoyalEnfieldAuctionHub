@@ -28,7 +28,12 @@ jobs:
 
     - name: Install dependencies
       run: |
+        set -e  # Stop if the pip install fails
         pip install -r requirements.txt
+        pip check  # Verify all dependencies are installed
+
+    - name: Add ~/.local/bin to PATH
+      run: echo "~/.local/bin" >> $GITHUB_PATH
 
     - name: Run tests and generate coverage report
       run: |
@@ -45,3 +50,4 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_SCANNER_OPTS: "-Dsonar.python.coverage.reportPaths=coverage.xml"
+
