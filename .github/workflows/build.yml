@@ -1,4 +1,4 @@
-name: SonarQube Analysis
+name: SonarCloud Analysis
 
 on:
   push:
@@ -30,11 +30,18 @@ jobs:
       run: |
         pip install -r requirements.txt
 
+    - name: Run tests and generate coverage report
+      run: |
+        pytest --cov=src --cov-report=xml:coverage.xml
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: coverage.xml
+
     - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v2
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      uses: SonarSource/sonarqube-scan-action@v4
-
-    - name: Upload Coverage Report
-      run: |
-        pytest --cov=src --cov-report=xml
+        SONAR_SCANNER_OPTS: "-Dsonar.python.coverage.reportPaths=coverage.xml"
