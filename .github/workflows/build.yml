@@ -35,9 +35,12 @@ jobs:
     - name: Add ~/.local/bin to PATH
       run: echo "~/.local/bin" >> $GITHUB_PATH
 
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+
     - name: Run tests and generate coverage report
       run: |
-        pytest --cov=src --cov-report=xml:coverage.xml
+        python -m pytest --cov=src --cov-report=xml:coverage.xml
 
     - name: Upload coverage report
       uses: actions/upload-artifact@v3
@@ -50,4 +53,3 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_SCANNER_OPTS: "-Dsonar.python.coverage.reportPaths=coverage.xml"
-
