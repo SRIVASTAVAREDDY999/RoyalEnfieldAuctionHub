@@ -1,52 +1,28 @@
-name: SonarCloud Analysis
+version: 0.2
 
-on:
-  push:
-    branches:
-      - main
+phases:
+  pre_build:
+    commands:
+      - echo "Completed pre_build"
+  build:
+    commands:
+      - echo "Starting build"
+      - pip install -r requirements.txt
+      - echo "Build complete"
+  post_build:
+    commands:
+      - echo "Entered post-build phase"
 
-jobs:
-  sonarcloud:
-    runs-on: ubuntu-latest
+artifacts:
+  files:
+    - application.py
+    - templates/addproduct.html
+    - templates/error_product404.html
+    - templates/index.html
+    - templates/prod.html
+    - templates/register.html
+    - templates/show_all.html
+    - static/1.jpg
+    - static/BenutzerArt.jfif
+    - static/style.css
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
-    - name: Cache sonar scanner
-      uses: actions/cache@v4
-      with:
-        path: ~/.sonar
-        key: sonar-scanner-${{ runner.os }}-${{ hashFiles('**/sonar-project.properties') }}
-        restore-keys: |
-          sonar-scanner-${{ runner.os }}
-
-    - name: Install dependencies
-      run: |
-        set -e  # Stop if the pip install fails
-        pip install -r requirements.txt
-        pip check  # Verify all dependencies are installed
-
-    - name: Add ~/.local/bin to PATH
-      run: echo "~/.local/bin" >> $GITHUB_PATH
-
-    - name: Run tests and generate coverage report
-      run: |
-        pytest --cov=src --cov-report=xml:coverage.xml
-
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage-report
-        path: coverage.xml
-
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v2
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_SCANNER_OPTS: "-Dsonar.python.coverage.reportPaths=coverage.xml"
